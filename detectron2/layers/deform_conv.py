@@ -183,6 +183,18 @@ class _DeformConv(Function):
 
         return best_step
 
+def infer_shape(input, weight, padding, dilation, stride):
+    n = input.size(0)
+    channels_out = weight.size(0)
+    height, width = input.shape[2:4]
+    kernel_h, kernel_w = weight.shape[2:4]
+    height_out = (
+        height + 2 * padding - (dilation * (kernel_h - 1) + 1)
+    ) // stride + 1
+    width_out = (
+        width + 2 * padding - (dilation * (kernel_w - 1) + 1)
+    ) // stride + 1
+    return n, channels_out, height_out, width_out
 
 class _ModulatedDeformConv(Function):
     @staticmethod
@@ -216,7 +228,7 @@ class _ModulatedDeformConv(Function):
             or input.requires_grad
         ):
             ctx.save_for_backward(input, offset, mask, weight, bias)
-        output = input.new_empty(_ModulatedDeformConv.infer_shape(ctx, input, weight))
+        output = input.new_empty(infer_shape(input, weight, padding, dilation, stride))
         ctx._bufs = [input.new_empty(0), input.new_empty(0)]
         _C.modulated_deform_conv_forward(
             input,
