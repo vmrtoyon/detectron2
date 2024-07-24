@@ -230,7 +230,7 @@ class _ModulatedDeformConv(Function):
             ctx.save_for_backward(input, offset, mask, weight, bias)
         output = input.new_empty(infer_shape(input, weight, padding, dilation, stride))
         ctx._bufs = [input.new_empty(0), input.new_empty(0)]
-        _C.modulated_deform_conv_forward(
+        torch.ops.my_detectron.modulated_deform_conv_forward(
             input,
             weight,
             bias,
