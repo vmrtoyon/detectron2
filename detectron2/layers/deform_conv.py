@@ -294,7 +294,7 @@ class _ModulatedDeformConv(Function):
             None,
         )
 
-    @staticmethod
+    # @staticmethod
     def infer_shape(ctx, input, weight):
         n = input.size(0)
         channels_out = weight.size(0)
